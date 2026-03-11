@@ -1,6 +1,9 @@
+using Carter;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddCarter();
 
 var app = builder.Build();
 
