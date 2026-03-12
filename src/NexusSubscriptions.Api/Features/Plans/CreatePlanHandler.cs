@@ -3,7 +3,9 @@ using NexusSubscriptions.Api.Infrasctructure.Handlers;
 
 namespace NexusSubscriptions.Api.Features.Plans;
 
-public record CreatePlanRequest;
+public record CreatePlanRequest(
+    string Description,
+    decimal Price);
 
 public record CreatePlanResponse;
 
