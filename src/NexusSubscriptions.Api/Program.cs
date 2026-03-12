@@ -1,9 +1,10 @@
-using Carter;
+using NexusSubscriptions.Api.Features.Plans;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
-builder.Services.AddCarter();
+builder.Services
+    .AddOpenApi()
+    .AddPlanModule();
 
 var app = builder.Build();
 
@@ -13,5 +14,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapPlanModule();
 
 app.Run();

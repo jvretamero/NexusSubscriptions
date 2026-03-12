@@ -7,8 +7,6 @@ public record CreatePlanRequest(
     string Description,
     decimal Price);
 
-public record CreatePlanResponse;
-
 public class CreatePlanValidator : AbstractValidator<CreatePlanRequest>
 {
     public CreatePlanValidator()
@@ -16,10 +14,16 @@ public class CreatePlanValidator : AbstractValidator<CreatePlanRequest>
     }
 }
 
-public class CreatePlanHandler : ICommandHandler<CreatePlanRequest, CreatePlanResponse>
+public class CreatePlanHandler : ICommandHandler<CreatePlanRequest, Plan>
 {
-    public Task<CreatePlanResponse> HandleAsync(CreatePlanRequest request, CancellationToken ct)
+    public Task<Plan> HandleAsync(CreatePlanRequest request, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        //TODO connect to database
+        return Task.FromResult(new Plan
+        {
+            Id = 1,
+            Description = "Test plan",
+            Price = 10m
+        });
     }
 }
