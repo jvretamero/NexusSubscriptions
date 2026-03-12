@@ -1,29 +1,50 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NexusSubscriptions.Api.Infrasctructure.Database;
 
 namespace NexusSubscriptions.Api.IntegrationTests;
 
 public class NexusSubscriptionsApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    public Task InitializeAsync()
+    private DbConnection? dbConnection = null;
+
+    public async Task InitializeAsync()
     {
-        //TODO initialize db connection
-        return Task.CompletedTask;
+        dbConnection = new SqliteConnection("DataSource=:memory:");
+        await dbConnection.OpenAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
         {
-            //TODO configure the db test connection
+            services.RemoveAll<DbContextOptions<ApiContext>>();
+
+            services.AddDbContext<ApiContext>(options =>
+            {
+                options.UseSqlite(dbConnection!);
+            });
+
+            using (var scope = services.BuildServiceProvider().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+                context.Database.EnsureCreated();
+            }
         });
     }
 
-    Task IAsyncLifetime.DisposeAsync()
+    async Task IAsyncLifetime.DisposeAsync()
     {
-        //TODO dispose db connection
-        return Task.CompletedTask;
+        if (dbConnection != null)
+        {
+            await dbConnection.CloseAsync();
+            await dbConnection.DisposeAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
 using FluentValidation;
+using NexusSubscriptions.Api.Infrasctructure.Database;
 using NexusSubscriptions.Api.Infrasctructure.Handlers;
 
 namespace NexusSubscriptions.Api.Features.Plans;
@@ -14,16 +15,20 @@ public class CreatePlanValidator : AbstractValidator<CreatePlanRequest>
     }
 }
 
-public class CreatePlanHandler : ICommandHandler<CreatePlanRequest, Plan>
+public class CreatePlanHandler(ApiContext context) : ICommandHandler<CreatePlanRequest, Plan>
 {
-    public Task<Plan> HandleAsync(CreatePlanRequest request, CancellationToken ct)
+    public async Task<Plan> HandleAsync(CreatePlanRequest request, CancellationToken ct)
     {
-        //TODO connect to database
-        return Task.FromResult(new Plan
+        var newPlan = new Plan
         {
-            Id = 1,
-            Description = "Test plan",
-            Price = 10m
-        });
+            Description = request.Description,
+            Price = request.Price
+        };
+
+        var createdPlan = await context.Plans.AddAsync(newPlan, ct);
+
+        await context.SaveChangesAsync(ct);
+
+        return createdPlan.Entity;
     }
 }

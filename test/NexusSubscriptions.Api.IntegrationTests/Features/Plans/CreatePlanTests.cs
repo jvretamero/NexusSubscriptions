@@ -4,7 +4,7 @@ using NexusSubscriptions.Api.Features.Plans;
 
 namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 
-[Collection("Sequential")]
+[Collection("IntegrationTests")]
 public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixture<NexusSubscriptionsApiFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
@@ -20,6 +20,6 @@ public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixtu
 
         var createdPlan = await response.Content.ReadFromJsonAsync<Plan>();
         createdPlan.Should().NotBeNull();
-        createdPlan!.Id.Should().BeGreaterThanOrEqualTo(0);
+        createdPlan!.Id.Should().BeGreaterThan(0);
     }
 }
