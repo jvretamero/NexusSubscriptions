@@ -30,10 +30,6 @@ public class NexusSubscriptionsApiFactory : WebApplicationFactory<Program>, IAsy
             {
                 options.UseSqlite(dbConnection!);
             });
-
-            using var scope = services.BuildServiceProvider().CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
-            context.Database.EnsureCreated();
         });
     }
 

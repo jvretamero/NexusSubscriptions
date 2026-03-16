@@ -12,7 +12,10 @@ public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixtu
     [Fact]
     public async Task CreatePlan_Returns201AndSavesPlanToDatabase()
     {
-        var request = new CreatePlanRequest(Description: "Test plan", Price: 10m);
+        var planDescription = "Test plan";
+        var planPrice = 10m;
+
+        var request = new CreatePlanRequest(planDescription, planPrice);
 
         var response = await _client.PostAsJsonAsync("/api/plans", request);
 
@@ -20,6 +23,8 @@ public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixtu
 
         var createdPlan = await response.Content.ReadFromJsonAsync<Plan>();
         createdPlan.Should().NotBeNull();
-        createdPlan!.Id.Should().BeGreaterThan(0);
+        createdPlan!.Id.Should().BeGreaterThan(0, "Plan id not positive");
+        createdPlan!.Description.Should().NotBeNullOrEmpty().And.BeEquivalentTo(planDescription, "Invalid plan description");
+        createdPlan!.Price.Should().BeApproximately(planPrice, 0m, "Invalid plan price");
     }
 }
