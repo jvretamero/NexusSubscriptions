@@ -5,4 +5,7 @@
   <Folder Name="/test/">
     <Project Path="test/NexusSubscriptions.Api.IntegrationTests/NexusSubscriptions.Api.IntegrationTests.csproj" />
   </Folder>
+  <Folder Name="/test/NexusSubscriptions.Api.UnitTests/">
+    <Project Path="test/NexusSubscriptions.Api.UnitTests/NexusSubscriptions.UnitTests.csproj" />
+  </Folder>
 </Solution>

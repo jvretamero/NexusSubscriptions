@@ -12,6 +12,13 @@ public class CreatePlanValidator : AbstractValidator<CreatePlanRequest>
 {
     public CreatePlanValidator()
     {
+        RuleFor(model => model.Description)
+            .NotEmpty()
+            .MaximumLength(30);
+
+        RuleFor(model => model.Price)
+            .NotNull()
+            .GreaterThan(0m);
     }
 }
 
