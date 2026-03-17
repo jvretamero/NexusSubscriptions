@@ -24,13 +24,19 @@ public class NexusSubscriptionsApiFactory : WebApplicationFactory<Program>, IAsy
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<DbContextOptions<ApiContext>>();
+            services.RemoveAll<ApiContext>();
 
             services.AddDbContext<ApiContext>(options =>
             {
                 options.UseSqlite(dbConnection!);
             });
         });
+    }
+
+    public ApiContext GetContext()
+    {
+        var scope = Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<ApiContext>();
     }
 
     async Task IAsyncLifetime.DisposeAsync()

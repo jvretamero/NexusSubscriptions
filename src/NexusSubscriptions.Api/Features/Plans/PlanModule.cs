@@ -8,6 +8,7 @@ public static class PlanModule
     public static IServiceCollection AddPlanModule(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<CreatePlanRequest, Plan>, CreatePlanHandler>();
+        services.AddScoped<IQueryHandler<GetAllPlansRequest, GetAllPlansResponse>, GetAllPlansHandler>();
         
         return services;
     }
@@ -18,6 +19,7 @@ public static class PlanModule
             .WithTags("Plans");
 
         group.MapPost("/", CreatePlan);
+        group.MapGet("/", GetAllPlans);
     }
 
     private static async Task<IResult> CreatePlan(
@@ -27,5 +29,13 @@ public static class PlanModule
     {
         var createdPlan = await handler.HandleAsync(request, ct);
         return TypedResults.Created("/api/plans/0", createdPlan);
+    }
+
+    private static async Task<IResult> GetAllPlans(
+        [FromServices] IQueryHandler<GetAllPlansRequest, GetAllPlansResponse> handler,
+        CancellationToken ct)
+    {
+        var response = await handler.HandleAsync(new GetAllPlansRequest(), ct);
+        return TypedResults.Ok(response.Plans);
     }
 }
