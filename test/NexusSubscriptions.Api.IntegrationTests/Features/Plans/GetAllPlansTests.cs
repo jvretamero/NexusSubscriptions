@@ -30,13 +30,13 @@ public class GetAllPlansTests : NexusSubscriptionsApiFixture
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-        var responseData = await response.Content.ReadFromJsonAsync<List<Plan>>();
+        var responseData = await response.Content.ReadFromJsonAsync<GetAllPlansResponse>();
 
         responseData.Should().NotBeNull();
-        responseData!.Should().HaveCount(3);
+        responseData.Plans.Should().HaveCount(3);
 
-        responseData.Should().Contain(p => p.Description == "Test plan 1");
-        responseData.Should().Contain(p => p.Description == "Test plan 2");
-        responseData.Should().Contain(p => p.Description == "Test plan 3");
+        responseData.Plans.Should().Contain(p => p.Description == "Test plan 1");
+        responseData.Plans.Should().Contain(p => p.Description == "Test plan 2");
+        responseData.Plans.Should().Contain(p => p.Description == "Test plan 3");
     }
 }

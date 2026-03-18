@@ -45,6 +45,6 @@ public static class PlanModule
         CancellationToken ct)
     {
         var response = await handler.HandleAsync(new GetAllPlansRequest(), ct);
-        return TypedResults.Ok(response.Plans);
+        return TypedResults.Ok(response);
     }
 }
