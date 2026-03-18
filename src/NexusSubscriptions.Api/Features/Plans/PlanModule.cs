@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using NexusSubscriptions.Api.Infrasctructure.Filters;
 using NexusSubscriptions.Api.Infrasctructure.Handlers;
 
 namespace NexusSubscriptions.Api.Features.Plans;
@@ -9,7 +11,8 @@ public static class PlanModule
     {
         services.AddScoped<ICommandHandler<CreatePlanRequest, Plan>, CreatePlanHandler>();
         services.AddScoped<IQueryHandler<GetAllPlansRequest, GetAllPlansResponse>, GetAllPlansHandler>();
-        
+        services.AddTransient<IValidator<CreatePlanRequest>, CreatePlanValidator>();
+
         return services;
     }
 
@@ -18,7 +21,9 @@ public static class PlanModule
         var group = app.MapGroup("/api/plans")
             .WithTags("Plans");
 
-        group.MapPost("/", CreatePlan);
+        group.MapPost("/", CreatePlan)
+            .AddEndpointFilter<ValidationFilter<CreatePlanRequest>>();
+
         group.MapGet("/", GetAllPlans);
     }
 

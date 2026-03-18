@@ -31,6 +31,8 @@ public class NexusSubscriptionsApiFactory : WebApplicationFactory<Program>, IAsy
                 options.UseSqlite(dbConnection!);
             });
         });
+
+        builder.UseEnvironment("Development");
     }
 
     public ApiContext GetContext()
