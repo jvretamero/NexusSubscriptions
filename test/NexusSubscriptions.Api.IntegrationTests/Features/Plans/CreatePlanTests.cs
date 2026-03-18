@@ -23,7 +23,7 @@ public class CreatePlanTests : NexusSubscriptionsApiFixture
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
 
-        var createdPlan = await response.Content.ReadFromJsonAsync<Plan>();
+        var createdPlan = await response.Content.ReadFromJsonAsync<PlanDTO>();
         createdPlan.Should().NotBeNull();
         createdPlan!.Id.Should().BeGreaterThan(0, "Plan id not positive");
         createdPlan!.Description.Should().NotBeNullOrEmpty().And.BeEquivalentTo(planDescription, "Invalid plan description");

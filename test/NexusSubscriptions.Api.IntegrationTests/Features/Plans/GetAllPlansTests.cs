@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using NexusSubscriptions.Api.Features.Plans;
+using NexusSubscriptions.Api.Features.Plans.Domain;
 
 namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 

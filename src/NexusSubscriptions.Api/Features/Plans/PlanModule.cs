@@ -9,7 +9,7 @@ public static class PlanModule
 {
     public static IServiceCollection AddPlanModule(this IServiceCollection services)
     {
-        services.AddScoped<ICommandHandler<CreatePlanRequest, Plan>, CreatePlanHandler>();
+        services.AddScoped<ICommandHandler<CreatePlanRequest, PlanDTO>, CreatePlanHandler>();
         services.AddScoped<IQueryHandler<GetAllPlansRequest, GetAllPlansResponse>, GetAllPlansHandler>();
         services.AddTransient<IValidator<CreatePlanRequest>, CreatePlanValidator>();
 
@@ -24,7 +24,7 @@ public static class PlanModule
         group.MapPost("/", CreatePlan)
             .WithName("CreatePlan")
             .AddValidationFilter<CreatePlanRequest>()
-            .Produces<Plan>();
+            .Produces<PlanDTO>();
 
         group.MapGet("/", GetAllPlans)
             .WithName("GetAllPlans")
@@ -33,11 +33,11 @@ public static class PlanModule
 
     private static async Task<IResult> CreatePlan(
         [FromBody] CreatePlanRequest request,
-        [FromServices] ICommandHandler<CreatePlanRequest, Plan> handler,
+        [FromServices] ICommandHandler<CreatePlanRequest, PlanDTO> handler,
         CancellationToken ct)
     {
-        var createdPlan = await handler.HandleAsync(request, ct);
-        return TypedResults.Created($"/api/plans/{createdPlan.Id}", createdPlan);
+        var response = await handler.HandleAsync(request, ct);
+        return TypedResults.Created($"/api/plans/{response.Id}", response);
     }
 
     private static async Task<IResult> GetAllPlans(

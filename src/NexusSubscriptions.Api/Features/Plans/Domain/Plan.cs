@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace NexusSubscriptions.Api.Features.Plans;
+namespace NexusSubscriptions.Api.Features.Plans.Domain;
 
 public class Plan
 {

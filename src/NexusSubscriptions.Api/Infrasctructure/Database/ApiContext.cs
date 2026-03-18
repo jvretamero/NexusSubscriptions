@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using NexusSubscriptions.Api.Features.Plans;
+using NexusSubscriptions.Api.Features.Plans.Domain;
 
 namespace NexusSubscriptions.Api.Infrasctructure.Database;
 
