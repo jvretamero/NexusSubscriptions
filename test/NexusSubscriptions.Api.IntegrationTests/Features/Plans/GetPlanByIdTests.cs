@@ -9,27 +9,33 @@ namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 public class GetPlanByIdTests : NexusSubscriptionsApiFixture
 {
     public GetPlanByIdTests(NexusSubscriptionsApiFactory factory) : base(factory)
-    { }
+    {
+        using var context = GetContext();
+
+        context.RemoveRange(context.Plans);
+
+        context.SaveChanges();
+    }
+
+    private async Task<Plan> CreatePlan(string description)
+    {
+        using var context = GetContext();
+
+        var addedPlan = await context.Plans.AddAsync(new Plan
+        {
+            Description = description,
+            Price = 1m
+        });
+
+        await context.SaveChangesAsync();
+
+        return addedPlan.Entity;
+    }
 
     [Fact]
-    public async Task GetPlanById_Returns200()
+    public async Task GetPlanById_Valid_Id_Should_Return_200()
     {
-        int planId = 0;
-
-        using (var context = GetContext())
-        {
-            context.RemoveRange(context.Plans);
-
-            var addedPlan = await context.Plans.AddAsync(new Plan
-            {
-                Description = "Test plan",
-                Price = 1m
-            });
-
-            await context.SaveChangesAsync();
-
-            planId = addedPlan.Entity.Id;
-        }
+        int planId = (await CreatePlan("Test plan")).Id;
 
         var response = await Client.GetAsync($"/api/plans/{planId}");
 
@@ -39,5 +45,13 @@ public class GetPlanByIdTests : NexusSubscriptionsApiFixture
 
         responseData.Should().NotBeNull();
         responseData.Should().BeEquivalentTo(new PlanDTO(planId, "Test plan", 1m));
+    }
+
+    [Fact]
+    public async Task GetPlanById_Invalid_Id_Should_Return_400()
+    {
+        var response = await Client.GetAsync($"/api/plans/{9999}");
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
     }
 }
