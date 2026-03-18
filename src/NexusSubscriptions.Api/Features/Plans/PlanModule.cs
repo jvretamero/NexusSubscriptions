@@ -26,16 +26,13 @@ public static class PlanModule
 
         group.MapPost("/", CreatePlan)
             .WithName("CreatePlan")
-            .AddValidationFilter<CreatePlanRequest>()
-            .Produces<PlanDTO>();
+            .AddValidationFilter<CreatePlanRequest>();
 
         group.MapGet("/", GetAllPlans)
-            .WithName("GetAllPlans")
-            .Produces<GetAllPlansResponse>();
+            .WithName("GetAllPlans");
 
         group.MapGet("/{id}", GetPlanById)
-            .WithName("GetPlanById")
-            .Produces<PlanDTO>();
+            .WithName("GetPlanById");
 
         group.MapDelete("/{id}", DeletePlanById)
             .WithName("DeletePlanById");
