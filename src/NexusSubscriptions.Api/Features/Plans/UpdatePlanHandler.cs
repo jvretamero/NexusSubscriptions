@@ -37,9 +37,10 @@ public class UpdatePlanHandler(ApiContext context) : ICommandHandler<UpdatePlanR
 
         plan.Description = request.Description;
         plan.Price = request.Price;
+        plan.UpdatedAt = DateTime.Now;
 
         await context.SaveChangesAsync(ct);
 
-        return new UpdatePlanResponse(new PlanDTO(plan.Id, plan.Description, plan.Price));
+        return new UpdatePlanResponse(new PlanDTO(plan.Id, plan.Description, plan.Price, plan.CreatedAt, plan.UpdatedAt));
     }
 }

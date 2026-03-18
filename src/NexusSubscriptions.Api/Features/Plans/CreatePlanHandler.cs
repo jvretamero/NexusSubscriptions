@@ -27,15 +27,18 @@ public class CreatePlanHandler(ApiContext context) : ICommandHandler<CreatePlanR
 {
     public async Task<PlanDTO> HandleAsync(CreatePlanRequest request, CancellationToken ct)
     {
+        var now = DateTime.Now;
         var newPlan = new Plan
         {
             Description = request.Description,
-            Price = request.Price
+            Price = request.Price,
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
         await context.Plans.AddAsync(newPlan, ct);
         await context.SaveChangesAsync(ct);
 
-        return new PlanDTO(newPlan.Id, newPlan.Description, newPlan.Price);
+        return new PlanDTO(newPlan.Id, newPlan.Description, newPlan.Price, newPlan.CreatedAt, newPlan.UpdatedAt);
     }
 }

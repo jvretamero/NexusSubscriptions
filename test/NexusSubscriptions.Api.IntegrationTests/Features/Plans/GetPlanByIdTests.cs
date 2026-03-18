@@ -21,10 +21,13 @@ public class GetPlanByIdTests : NexusSubscriptionsApiFixture
     {
         using var context = GetContext();
 
+        var now = DateTime.Now;
         var addedPlan = await context.Plans.AddAsync(new Plan
         {
             Description = description,
-            Price = 1m
+            Price = 1m,
+            CreatedAt = now,
+            UpdatedAt = now
         });
 
         await context.SaveChangesAsync();
@@ -44,7 +47,11 @@ public class GetPlanByIdTests : NexusSubscriptionsApiFixture
         var responseData = await response.Content.ReadFromJsonAsync<PlanDTO>();
 
         responseData.Should().NotBeNull();
-        responseData.Should().BeEquivalentTo(new PlanDTO(planId, "Test plan", 1m));
+        responseData.Id.Should().Be(planId);
+        responseData.Description.Should().Be("Test plan");
+        responseData.Price.Should().Be(1m);
+        responseData.CreatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        responseData.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
     }
 
     [Fact]

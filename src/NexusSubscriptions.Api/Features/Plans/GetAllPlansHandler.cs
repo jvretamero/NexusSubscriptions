@@ -15,7 +15,7 @@ public class GetAllPlansHandler(ApiContext context) : IQueryHandler<GetAllPlansR
         var plans = await context.Plans
             .AsNoTracking()
             .OrderBy(plan => plan.Id)
-            .Select(plan => new PlanDTO(plan.Id, plan.Description, plan.Price))
+            .Select(plan => new PlanDTO(plan.Id, plan.Description, plan.Price, plan.CreatedAt, plan.UpdatedAt))
             .ToListAsync(ct);
 
         return new GetAllPlansResponse(plans);

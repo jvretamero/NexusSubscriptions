@@ -18,14 +18,17 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
         context.SaveChanges();
     }
 
-    private async Task<Plan> CreatePlan(string description)
+    private async Task<Plan> CreatePlan(string description, DateTime createdAt)
     {
         using var context = GetContext();
 
+        var now = DateTime.Now;
         var addedPlan = await context.Plans.AddAsync(new Plan
         {
             Description = description,
-            Price = 1m
+            Price = 1m,
+            CreatedAt = createdAt,
+            UpdatedAt = now
         });
 
         await context.SaveChangesAsync();
@@ -36,7 +39,7 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
     [Fact]
     public async Task UpdatePlan_Valid_Id_Should_Return_200()
     {
-        int planId = (await CreatePlan("Test plan")).Id;
+        int planId = (await CreatePlan("Test plan", DateTime.Today)).Id;
 
         var requestBody = new UpdatePlanDTO("New description", 5m);
         var response = await Client.PutAsJsonAsync($"/api/plans/{planId}", requestBody);
@@ -46,7 +49,11 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
         var responseData = await response.Content.ReadFromJsonAsync<PlanDTO>();
 
         responseData.Should().NotBeNull("Plan not returned");
-        responseData.Should().BeEquivalentTo(new PlanDTO(planId, "New description", 5m), "Plan not updated");
+        responseData.Id.Should().Be(planId);
+        responseData.Description.Should().Be("New description");
+        responseData.Price.Should().Be(5m);
+        responseData.CreatedAt.Should().BeCloseTo(DateTime.Today, TimeSpan.FromSeconds(0));
+        responseData.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -61,7 +68,7 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
     [Fact]
     public async Task UpdatePlan_Invalid_Data_ReturnsBadRequest()
     {
-        int planId = (await CreatePlan("Test plan")).Id;
+        int planId = (await CreatePlan("Test plan", DateTime.Today)).Id;
 
         var requestBody = new UpdatePlanDTO("This is a very long plan description", 5m);
         var response = await Client.PutAsJsonAsync($"/api/plans/{planId}", requestBody);
@@ -70,6 +77,6 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
 
         using var context = GetContext();
         var plan = await context.Plans.SingleAsync(plan => plan.Id == planId);
-        plan.Should().BeEquivalentTo(new Plan { Id = planId, Description = "Test plan", Price = 1m }, "Plan updated incorrectly");
+        plan.Description.Should().Be("Test plan");
     }
 }

@@ -15,7 +15,7 @@ public class GetPlanByIdHandler(ApiContext context) : IQueryHandler<GetPlanByIdR
         var plan = await context.Plans
             .AsNoTracking()
             .Where(plan => plan.Id == request.Id)
-            .Select(plan => new PlanDTO(plan.Id, plan.Description, plan.Price))
+            .Select(plan => new PlanDTO(plan.Id, plan.Description, plan.Price, plan.CreatedAt, plan.UpdatedAt))
             .SingleOrDefaultAsync(ct);
 
         return new GetPlanByIdResponse(plan);

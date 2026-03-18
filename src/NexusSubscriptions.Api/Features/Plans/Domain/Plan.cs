@@ -10,6 +10,10 @@ public class Plan
     public required string Description { get; set; }
 
     public decimal Price { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }
 
 public class PlanTypeConfiguration : IEntityTypeConfiguration<Plan>
@@ -24,6 +28,12 @@ public class PlanTypeConfiguration : IEntityTypeConfiguration<Plan>
             .IsRequired();
 
         builder.Property(p => p.Price)
+            .IsRequired();
+
+        builder.Property(p => p.CreatedAt)
+            .IsRequired();
+
+        builder.Property(p => p.UpdatedAt)
             .IsRequired();
     }
 }
