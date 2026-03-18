@@ -13,6 +13,7 @@ public static class PlanModule
         services.AddScoped<IQueryHandler<GetAllPlansRequest, GetAllPlansResponse>, GetAllPlansHandler>();
         services.AddScoped<IQueryHandler<GetPlanByIdRequest, GetPlanByIdResponse>, GetPlanByIdHandler>();
         services.AddScoped<ICommandHandler<DeletePlanByIdRequest, DeletePlanByIdResponse>, DeletePlanByIdHandler>();
+        services.AddScoped<ICommandHandler<UpdatePlanRequest, UpdatePlanResponse>, UpdatePlanHandler>();
 
         services.AddTransient<IValidator<CreatePlanRequest>, CreatePlanValidator>();
 
@@ -36,6 +37,9 @@ public static class PlanModule
 
         group.MapDelete("/{id}", DeletePlanById)
             .WithName("DeletePlanById");
+
+        group.MapPut("/{id}", UpdatePlan)
+            .WithName("UpdatePlan");
     }
 
     private static async Task<IResult> CreatePlan(
@@ -81,5 +85,20 @@ public static class PlanModule
             return TypedResults.NotFound();
 
         return TypedResults.NoContent();
+    }
+
+    private static async Task<IResult> UpdatePlan(
+        [FromRoute] int id,
+        [FromBody] UpdatePlanDTO body,
+        [FromServices] ICommandHandler<UpdatePlanRequest, UpdatePlanResponse> handler,
+        CancellationToken ct)
+    {
+        var request = new UpdatePlanRequest(id, body.Description, body.Price);
+        var response = await handler.HandleAsync(request, ct);
+
+        if (response.Plan is null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(response.Plan);
     }
 }
