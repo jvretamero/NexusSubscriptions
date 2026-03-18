@@ -22,9 +22,13 @@ public static class PlanModule
             .WithTags("Plans");
 
         group.MapPost("/", CreatePlan)
-            .AddEndpointFilter<ValidationFilter<CreatePlanRequest>>();
+            .WithName("CreatePlan")
+            .AddValidationFilter<CreatePlanRequest>()
+            .Produces<Plan>();
 
-        group.MapGet("/", GetAllPlans);
+        group.MapGet("/", GetAllPlans)
+            .WithName("GetAllPlans")
+            .Produces<GetAllPlansResponse>();
     }
 
     private static async Task<IResult> CreatePlan(
@@ -33,7 +37,7 @@ public static class PlanModule
         CancellationToken ct)
     {
         var createdPlan = await handler.HandleAsync(request, ct);
-        return TypedResults.Created("/api/plans/0", createdPlan);
+        return TypedResults.Created($"/api/plans/{createdPlan.Id}", createdPlan);
     }
 
     private static async Task<IResult> GetAllPlans(
