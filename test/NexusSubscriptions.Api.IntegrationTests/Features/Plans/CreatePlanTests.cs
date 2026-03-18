@@ -6,9 +6,10 @@ using NexusSubscriptions.Api.Features.Plans;
 namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 
 [Collection("IntegrationTests")]
-public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixture<NexusSubscriptionsApiFactory>
+public class CreatePlanTests : NexusSubscriptionsApiFixture
 {
-    private readonly HttpClient client = factory.CreateClient();
+    public CreatePlanTests(NexusSubscriptionsApiFactory factory) : base(factory)
+    { }
 
     [Fact]
     public async Task CreatePlan_Returns201AndSavesPlanToDatabase()
@@ -18,7 +19,7 @@ public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixtu
 
         var request = new CreatePlanRequest(planDescription, planPrice);
 
-        var response = await client.PostAsJsonAsync("/api/plans", request);
+        var response = await Client.PostAsJsonAsync("/api/plans", request);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
 
@@ -34,11 +35,11 @@ public class CreatePlanTests(NexusSubscriptionsApiFactory factory) : IClassFixtu
     {
         var request = new CreatePlanRequest("This is a very long plan description", -1m);
 
-        var response = await client.PostAsJsonAsync("/api/plans", request);
+        var response = await Client.PostAsJsonAsync("/api/plans", request);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
 
-        using var db = factory.GetContext();
+        using var db = GetContext();
         var planCount = await db.Plans.CountAsync();
         planCount.Should().Be(0);
     }

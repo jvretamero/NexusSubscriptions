@@ -5,14 +5,15 @@ using NexusSubscriptions.Api.Features.Plans;
 namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 
 [Collection("IntegrationTests")]
-public class GetAllPlansTests(NexusSubscriptionsApiFactory factory) : IClassFixture<NexusSubscriptionsApiFactory>
+public class GetAllPlansTests : NexusSubscriptionsApiFixture
 {
-    private readonly HttpClient client = factory.CreateClient();
+    public GetAllPlansTests(NexusSubscriptionsApiFactory factory) : base(factory)
+    { }
 
     [Fact]
     public async Task GetAllPlans_Returns200()
     {
-        using (var context = factory.GetContext())
+        using (var context = GetContext())
         {
             context.RemoveRange(context.Plans);
 
@@ -25,7 +26,7 @@ public class GetAllPlansTests(NexusSubscriptionsApiFactory factory) : IClassFixt
             await context.SaveChangesAsync();
         }
 
-        var response = await client.GetAsync("/api/plans");
+        var response = await Client.GetAsync("/api/plans");
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
