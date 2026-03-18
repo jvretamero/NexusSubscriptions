@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NexusSubscriptions.Api.Infrasctructure.Database;
 using NexusSubscriptions.Api.Infrasctructure.Handlers;
@@ -9,6 +10,20 @@ public record UpdatePlanDTO(string Description, decimal Price);
 public record UpdatePlanRequest(int Id, string Description, decimal Price);
 
 public record UpdatePlanResponse(PlanDTO? Plan);
+
+public class UpdatePlanValidator : AbstractValidator<UpdatePlanDTO>
+{
+    public UpdatePlanValidator()
+    {
+        RuleFor(model => model.Description)
+            .NotEmpty()
+            .MaximumLength(30);
+
+        RuleFor(model => model.Price)
+            .NotNull()
+            .GreaterThan(0m);
+    }
+}
 
 public class UpdatePlanHandler(ApiContext context) : ICommandHandler<UpdatePlanRequest, UpdatePlanResponse>
 {

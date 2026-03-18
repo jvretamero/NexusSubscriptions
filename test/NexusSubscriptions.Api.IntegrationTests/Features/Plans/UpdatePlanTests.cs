@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NexusSubscriptions.Api.Features.Plans;
 using NexusSubscriptions.Api.Features.Plans.Domain;
 
@@ -45,8 +46,7 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
         var responseData = await response.Content.ReadFromJsonAsync<PlanDTO>();
 
         responseData.Should().NotBeNull("Plan not returned");
-        responseData.Description.Should().BeEquivalentTo("New description", "Description not updated");
-        responseData.Price.Should().BeApproximately(5m, 0m, "Price not updated");
+        responseData.Should().BeEquivalentTo(new PlanDTO(planId, "New description", 5m), "Plan not updated");
     }
 
     [Fact]
@@ -56,5 +56,20 @@ public class UpdatePlanTests : NexusSubscriptionsApiFixture
         var response = await Client.PutAsJsonAsync($"/api/plans/{9999}", requestBody);
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task UpdatePlan_Invalid_Data_ReturnsBadRequest()
+    {
+        int planId = (await CreatePlan("Test plan")).Id;
+
+        var requestBody = new UpdatePlanDTO("This is a very long plan description", 5m);
+        var response = await Client.PutAsJsonAsync($"/api/plans/{planId}", requestBody);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+
+        using var context = GetContext();
+        var plan = await context.Plans.SingleAsync(plan => plan.Id == planId);
+        plan.Should().BeEquivalentTo(new Plan { Id = planId, Description = "Test plan", Price = 1m }, "Plan updated incorrectly");
     }
 }

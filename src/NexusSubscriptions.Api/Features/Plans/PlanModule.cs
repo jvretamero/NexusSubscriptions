@@ -16,6 +16,7 @@ public static class PlanModule
         services.AddScoped<ICommandHandler<UpdatePlanRequest, UpdatePlanResponse>, UpdatePlanHandler>();
 
         services.AddTransient<IValidator<CreatePlanRequest>, CreatePlanValidator>();
+        services.AddTransient<IValidator<UpdatePlanDTO>, UpdatePlanValidator>();
 
         return services;
     }
@@ -39,7 +40,8 @@ public static class PlanModule
             .WithName("DeletePlan");
 
         group.MapPut("/{id}", UpdatePlan)
-            .WithName("UpdatePlan");
+            .WithName("UpdatePlan")
+            .AddValidationFilter<UpdatePlanDTO>();
     }
 
     private static async Task<IResult> CreatePlan(
