@@ -1,15 +1,13 @@
-using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NexusSubscriptions.Api.Features.Plans;
 using NexusSubscriptions.Api.Features.Plans.Domain;
 
 namespace NexusSubscriptions.Api.IntegrationTests.Features.Plans;
 
 [Collection("IntegrationTests")]
-public class DeletePlanByIdTests : NexusSubscriptionsApiFixture
+public class DeletePlanTests : NexusSubscriptionsApiFixture
 {
-    public DeletePlanByIdTests(NexusSubscriptionsApiFactory factory) : base(factory)
+    public DeletePlanTests(NexusSubscriptionsApiFactory factory) : base(factory)
     {
         using var context = GetContext();
 
@@ -40,7 +38,7 @@ public class DeletePlanByIdTests : NexusSubscriptionsApiFixture
     }
 
     [Fact]
-    public async Task DeletePlanById_Valid_Id_Should_Return_204()
+    public async Task DeletePlan_Valid_Id_Should_Return_204()
     {
         int planId = (await CreatePlan("Test plan")).Id;
 
@@ -53,7 +51,7 @@ public class DeletePlanByIdTests : NexusSubscriptionsApiFixture
     }
 
     [Fact]
-    public async Task DeletePlanById_Invalid_Id_Should_Return_400()
+    public async Task DeletePlan_Invalid_Id_Should_Return_400()
     {
         var response = await Client.DeleteAsync($"/api/plans/{9999}");
 
