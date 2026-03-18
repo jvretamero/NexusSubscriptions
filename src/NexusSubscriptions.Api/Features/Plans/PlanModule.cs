@@ -11,6 +11,8 @@ public static class PlanModule
     {
         services.AddScoped<ICommandHandler<CreatePlanRequest, PlanDTO>, CreatePlanHandler>();
         services.AddScoped<IQueryHandler<GetAllPlansRequest, GetAllPlansResponse>, GetAllPlansHandler>();
+        services.AddScoped<IQueryHandler<GetPlanByIdRequest, GetPlanByIdResponse>, GetPlanByIdHandler>();
+
         services.AddTransient<IValidator<CreatePlanRequest>, CreatePlanValidator>();
 
         return services;
@@ -29,6 +31,10 @@ public static class PlanModule
         group.MapGet("/", GetAllPlans)
             .WithName("GetAllPlans")
             .Produces<GetAllPlansResponse>();
+
+        group.MapGet("/{id}", GetPlanById)
+            .WithName("GetPlanById")
+            .Produces<PlanDTO>();
     }
 
     private static async Task<IResult> CreatePlan(
@@ -46,5 +52,19 @@ public static class PlanModule
     {
         var response = await handler.HandleAsync(new GetAllPlansRequest(), ct);
         return TypedResults.Ok(response);
+    }
+
+    private static async Task<IResult> GetPlanById(
+        [FromRoute] int id,
+        [FromServices] IQueryHandler<GetPlanByIdRequest, GetPlanByIdResponse> handler,
+        CancellationToken ct)
+    {
+        var request = new GetPlanByIdRequest(id);
+        var response = await handler.HandleAsync(request, ct);
+
+        if (response.Plan is null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(response.Plan);
     }
 }
